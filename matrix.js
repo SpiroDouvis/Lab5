@@ -1,8 +1,8 @@
 function generateMatrices() {
     createMatrix('The 1st Matrix', 'matrix1', document.getElementById('matrix1Rows').value, document.getElementById('matrix1Cols').value);
     createMatrix('The 2nd Matrix','matrix2', document.getElementById('matrix2Rows').value, document.getElementById('matrix2Cols').value);
+    
 }
-
 const createMatrix = (title, containerId, rows, cols) => {
     let container = document.getElementById(containerId);
     container.innerHTML = ''; // Clear previous content
@@ -51,9 +51,25 @@ const showResult = (title, containerId, rows, cols, dataArray) => {
 };
 
 const showResult2D = (title, containerId, dataArray) => {
-	// dataArray is a 2D array
-	// complete this function based on the showResult function
-}
+	let container = document.getElementById(containerId);
+    container.innerHTML = ''; // Clear previous content
+    let table = document.createElement('table');
+
+    for (let i = 0; i < dataArray.length; i++) {
+        let tr = document.createElement('tr');
+        for (let j = 0; j < dataArray[i].length; j++) {
+            let td = document.createElement('td');
+            td.textContent = dataArray[i][j];
+    
+            tr.appendChild(td);
+        }
+        table.appendChild(tr);
+    }
+
+    let caption = table.createCaption();
+    caption.textContent = title;
+    container.appendChild(table);
+};
 
 function performOperation(operation) {
     let matrix1 = getMatrixData2D('matrix1');
@@ -61,13 +77,27 @@ function performOperation(operation) {
     console.log("1st Matrix",matrix1);
     console.log("2nd Matrix", matrix2);
     console.log("Operation", operation);
-    // Just a test result
-    let result = [1, 2, 3, 4, 5, 6, 7, 8];
-    // Call your matrix calculation functions here
-    // For example: if (operation === 'add') { addMatrices(matrix1, matrix2); }
-	// prints suitable messages for impossible situation
-    showResult('The Result', 'matrix3', 2, 4, result); // use suitable function for printing results
+
+    let result;
+    if (operation === 'add') { 
+        result = addMatrices(matrix1, matrix2); 
+    } else if (operation === 'subtract') { 
+        result = subtractMatrices(matrix1, matrix2); 
+    } else if (operation === 'multiply') { 
+        result = multiplyMatrices(matrix1, matrix2); 
+    } else {
+        console.log('Unknown operation: ' + operation);
+        return;
+    }
+
+    if (!result) {
+        console.log('Operation not possible due to incompatible matrix dimensions');
+        return;
+    }
+
+    showResult2D('The Result', 'matrix3', result);
 }
+
 
 const getMatrixData1D = function (matrixId) {
     let matrixData = [];
@@ -104,11 +134,50 @@ const getMatrixData2D = function (matrixId) {
 // Add your matrix calculation functions here
 // The functions must check the posibility of calculation too.
 function addMatrices(matrix1, matrix2){ 
-	// provide the code
-}
+    if (matrix1.length !== matrix2.length || matrix1[0].length !== matrix2[0].length) {
+        console.log("Addition is not possible as the matrices have different dimensions.");
+        return [];
+    }
+    let result=[];
+    for(let i=0;i<matrix1.length;i++){
+        let row =[];
+        for(let j=0;j<matrix1[0].length;j++){
+            row.push(matrix1[i][j]+matrix2[i][j]);
+        }
+        result.push(row);
+    }
+    return result;
+};
+
 const subtractMatrices = function (matrix1, matrix2) { 
-	// provide the code
+    if (matrix1.length !== matrix2.length || matrix1[0].length !== matrix2[0].length) {
+        console.log("Subtraction is not possible as the matrices have different dimensions.");
+        return [];
+    }
+    let result=[];
+    for(let i=0;i<matrix1.length;i++){
+        let row =[];
+        for(let j=0;j< matrix1[0].length;j++){
+            row.push(matrix1[i][j]-matrix2[i][j]);
+        }
+        result.push(row);
+    }
+    return result;
 };
 const multiplyMatrices = (matrix1, matrix2) => { 
-	// provide the code
+    if (matrix1[0].length !== matrix2.length) {
+        console.log("Multiplication is not possible as the number of columns in the first matrix is not equal to the number of rows in the second matrix.");
+        return;
+    }
+    let result = [];
+    for(let i = 0; i < matrix1.length; i++){
+        result[i] = [];
+        for(let j = 0; j < matrix2[0].length; j++){
+            result[i][j] = 0;
+            for(let k = 0; k < matrix1[0].length; k++){
+                result[i][j] += matrix1[i][k] * matrix2[k][j];
+            }
+        }
+    }
+    return result;
 };
